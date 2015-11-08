@@ -9,7 +9,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class webextractor {
@@ -65,6 +66,13 @@ public class webextractor {
             browser.findElement(By.id("link2")).click();
 
             //Change to extract Articles table
+//            List<WebElement> elements = browser.findElements(By.xpath())
+//
+//            for(WebElement frame: frames){
+//                System.out.println(frame.getText());
+//            }
+
+            browser.switchTo().defaultContent(); // Switch to the top frame
             browser.switchTo().frame("Derecho");
             browser.switchTo().frame("Almacen");
             browser.switchTo().frame("Articulos");
@@ -73,21 +81,28 @@ public class webextractor {
             WebElement table = browser.findElement(By.id("ListaArticulos"));
             List<WebElement> tr_collection=table.findElements(By.xpath("id('ListaArticulos')/tbody/tr"));
 
-            System.out.println("NUMBER OF ROWS IN THIS TABLE = "+tr_collection.size());
-            int row_num,col_num;
-            row_num=1;
-            for(WebElement trElement : tr_collection)
-            {
-                List<WebElement> td_collection=trElement.findElements(By.xpath("td"));
-                System.out.println("NUMBER OF COLUMNS="+td_collection.size());
-                col_num=1;
+            //almacenamiento de Articulos
+            List<List<String>> filas = new ArrayList<List<String>>();
+            List<String> columnas = new ArrayList<String>();
+
+            //System.out.println("NUMBER OF ROWS IN THIS TABLE = "+tr_collection.size());
+            //int row_num,col_num;
+            //row_num=1;
+            for(WebElement trElement : tr_collection) {
+                List<WebElement> td_collection = trElement.findElements(By.xpath("td"));
+                //System.out.println("NUMBER OF COLUMNS=" + td_collection.size());
+                //col_num=1;
                 for(WebElement tdElement : td_collection)
                 {
-                    System.out.println("row # "+row_num+", col # "+col_num+ "text="+tdElement.getText());
-                    col_num++;
+                    //System.out.println("row # "+row_num+", col # "+col_num+ "text="+tdElement.getText());
+                    //col_num++;
+                    columnas.add(tdElement.getText());
+
                 }
-                row_num++;
+                filas.add(columnas);
+                //row_num++;
             }
+            System.out.println("Terminao");
 /*
             // Steps for login access
             browser.findElement(By.id("user")).sendKeys("user");
