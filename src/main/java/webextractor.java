@@ -3,18 +3,47 @@
  */
 
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
+
+import java.util.concurrent.TimeUnit;
 
 public class webextractor {
-
 
         public static void main(String[] args) throws Exception {
             // The Firefox driver supports javascript
             WebDriver browser = new FirefoxDriver();
+            Actions action = new Actions(browser);
 
+            //Use implicit timeouts (if no element is found when search is done it will wait)
+            browser.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
             // Go to the web page
-            browser.get("https://www.binarycanarias.com");
+            browser.get("http://www.binarycanarias.com");
+
+            //www.binarycanarias.com uses frames we need to switch to the desired frame to click on login icon
+            browser.switchTo().frame("Derecho");
+            browser.switchTo().frame("Permanente");
+
+            //Launch Login window
+            while (browser.findElement(By.id("SesionTXT")).getText().equals("ESPERE...")){}
+
+            System.out.println(browser.findElement(By.id("SesionTXT")).getText());
+            browser.findElement(By.id("SesionTXT")).click();
+
+            // Switch to new window opened
+            for(String winHandle : browser.getWindowHandles()) {
+                browser.switchTo().window(winHandle);
+            }
+
+            //Login to web
+            browser.findElement(By.name("Usuario")).sendKeys("usuario");
+            browser.findElement(By.name("Clave")).sendKeys("clave");
+            browser.findElement(By.id("aLP")).click();
+
+            //Close login window
+            browser.close();
 /*
             // Steps for login access
             browser.findElement(By.id("user")).sendKeys("user");
