@@ -5,9 +5,11 @@
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class webextractor {
@@ -26,10 +28,11 @@ public class webextractor {
             browser.switchTo().frame("Derecho");
             browser.switchTo().frame("Permanente");
 
-            //Launch Login window
+            //Wait till web is loaded
             while (browser.findElement(By.id("SesionTXT")).getText().equals("ESPERE...")){}
 
-            System.out.println(browser.findElement(By.id("SesionTXT")).getText());
+            //Save main window handler and launch login windows
+            String mainwinHandler = browser.getWindowHandle();
             browser.findElement(By.id("SesionTXT")).click();
 
             // Switch to new window opened
@@ -38,12 +41,53 @@ public class webextractor {
             }
 
             //Login to web
-            browser.findElement(By.name("Usuario")).sendKeys("usuario");
-            browser.findElement(By.name("Clave")).sendKeys("clave");
+            browser.findElement(By.name("Usuario")).sendKeys("7430");
+            browser.findElement(By.name("Clave")).sendKeys("blj2qI");
             browser.findElement(By.id("aLP")).click();
 
             //Close login window
             browser.close();
+            browser.switchTo().window(mainwinHandler);
+            browser.switchTo().frame("Derecho");
+            browser.switchTo().frame("Permanente");
+
+            //Open Purchase Window
+            browser.findElement(By.id("Compras")).click();
+
+            //Switch to new window opened
+            for(String winHandle : browser.getWindowHandles()) {
+                browser.switchTo().window(winHandle);
+            }
+
+            browser.switchTo().frame("Izquierdo");
+            browser.switchTo().frame("Noticias");
+            browser.findElement(By.id("link1")).click();
+            browser.findElement(By.id("link2")).click();
+
+            //Change to extract Articles table
+            browser.switchTo().frame("Derecho");
+            browser.switchTo().frame("Almacen");
+            browser.switchTo().frame("Articulos");
+            browser.switchTo().frame("idTAB1");
+
+            WebElement table = browser.findElement(By.id("ListaArticulos"));
+            List<WebElement> tr_collection=table.findElements(By.xpath("id('ListaArticulos')/tbody/tr"));
+
+            System.out.println("NUMBER OF ROWS IN THIS TABLE = "+tr_collection.size());
+            int row_num,col_num;
+            row_num=1;
+            for(WebElement trElement : tr_collection)
+            {
+                List<WebElement> td_collection=trElement.findElements(By.xpath("td"));
+                System.out.println("NUMBER OF COLUMNS="+td_collection.size());
+                col_num=1;
+                for(WebElement tdElement : td_collection)
+                {
+                    System.out.println("row # "+row_num+", col # "+col_num+ "text="+tdElement.getText());
+                    col_num++;
+                }
+                row_num++;
+            }
 /*
             // Steps for login access
             browser.findElement(By.id("user")).sendKeys("user");
