@@ -7,7 +7,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Actions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,6 @@ public class webextractor {
         public static void main(String[] args) throws Exception {
             // The Firefox driver supports javascript
             WebDriver browser = new FirefoxDriver();
-            Actions action = new Actions(browser);
 
             //Use implicit timeouts (if no element is found when search is done it will wait)
             browser.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
@@ -63,7 +61,7 @@ public class webextractor {
             browser.switchTo().frame("Izquierdo");
             browser.switchTo().frame("Noticias");
             browser.findElement(By.id("link1")).click();
-            browser.findElement(By.id("link2")).click();
+            browser.findElement(By.id("link3")).click();
 
             //Change to extract Articles table
 //            List<WebElement> elements = browser.findElements(By.xpath())
@@ -78,6 +76,7 @@ public class webextractor {
             browser.switchTo().frame("Articulos");
             browser.switchTo().frame("idTAB1");
 
+            browser.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
             WebElement table = browser.findElement(By.id("ListaArticulos"));
             List<WebElement> tr_collection=table.findElements(By.xpath("id('ListaArticulos')/tbody/tr"));
 
@@ -86,21 +85,28 @@ public class webextractor {
             List<String> columnas = new ArrayList<String>();
 
             //System.out.println("NUMBER OF ROWS IN THIS TABLE = "+tr_collection.size());
-            //int row_num,col_num;
-            //row_num=1;
+            int row_num,col_num;
+            row_num=1;
             for(WebElement trElement : tr_collection) {
                 List<WebElement> td_collection = trElement.findElements(By.xpath("td"));
                 //System.out.println("NUMBER OF COLUMNS=" + td_collection.size());
-                //col_num=1;
+                col_num=1;
                 for(WebElement tdElement : td_collection)
                 {
-                    //System.out.println("row # "+row_num+", col # "+col_num+ "text="+tdElement.getText());
-                    //col_num++;
+                    //System.out.println("row # "+row_num+", col # "+col_num+ "tamaño="+tdElement.getSize().getWidth());
+                    System.out.println("row # "+row_num+", col # "+col_num+ "text="+tdElement.getText());
+                    if (tdElement.findElements(By.tagName("a")).size() > 0) {
+                        System.out.println("row # " + row_num + ", col # " + col_num + "onclick=" + tdElement.findElement(By.tagName("a")).getAttribute("onclick"));
+                        System.out.println("row # " + row_num + ", col # " + col_num + "href=" + tdElement.findElement(By.tagName("a")).getAttribute("href"));
+                    }
+                    col_num++;
                     columnas.add(tdElement.getText());
 
                 }
                 filas.add(columnas);
-                //row_num++;
+                row_num++;
+                if(row_num==20)
+                    break;
             }
             System.out.println("Terminao");
 /*
@@ -142,8 +148,8 @@ public class webextractor {
                 System.out.println(suggestion.getText());
             }
 */
-            browser.wait();
-            browser.quit();
+//            browser.wait();
+//            browser.quit();
         }
 
 }
