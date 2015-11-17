@@ -79,11 +79,18 @@ public class BinaryCanariasExtractorController {
             for (WebElement link2 : linksSecondaryWindow
                     ) {
                 link2.click();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 browser.switchTo().defaultContent(); // Switch to the top frame
                 browser.switchTo().frame("Derecho");
                 browser.switchTo().frame("Almacen");
                 browser.switchTo().frame("Articulos");
                 getArticles(browser);
+                // Swith to left frame to clik next link
+                browser.switchTo().defaultContent().switchTo().frame(0).switchTo().frame(1);
             }
         }
 
@@ -92,21 +99,19 @@ public class BinaryCanariasExtractorController {
 
     private List<Article> getArticles(WebDriver browser) {
         browser.switchTo().frame("idTAB1");
-
         browser.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-
         List<Article> articles = new ArrayList<Article>();
 
         WebElement table = browser.findElement(By.id("ListaArticulos"));
         List<WebElement> tr_collection = table.findElements(By.tagName("tr"));
 
         for (WebElement trElement : tr_collection) {
-            List<WebElement> td_collection = trElement.findElements(By.xpath("td"));
+            List<WebElement> td_collection = trElement.findElements(By.tagName("td"));
             String group = "";
 
             if (td_collection.size() < 7) {// grupo
                 group = trElement.findElement(By.className("ModoImagenTITCAB")).getText();
-            } else {// new article
+            }else{// new article
                 Article article = new Article(
                         getText(td_collection.get(0)),
                         getImage(td_collection.get(1)),
@@ -123,11 +128,10 @@ public class BinaryCanariasExtractorController {
         }
 
         System.out.println("Terminao lista de articuloss");
-        browser.switchTo().defaultContent(); // Switch to the top frame to find and close idTAB1
-        browser.switchTo().frame("Derecho");
-        browser.switchTo().frame("Almacen");
-        browser.switchTo().frame("Articulos");
+        browser.switchTo().parentFrame();
         browser.findElement(By.id("Cerrar1")).click();
+
+        System.out.println("Paso el click");
         return articles;
     }
 
