@@ -1,5 +1,7 @@
 package main;
 
+import java.util.StringTokenizer;
+
 /**
  * Created by Ismael Ojeda Perez on 15/11/2015.
  */
@@ -31,6 +33,13 @@ public class Article {
 
     public String getImg() {
         return img;
+    }
+
+    public String getImgUrl()
+    {
+        StringTokenizer sc = new StringTokenizer(img,"'");
+        sc.nextToken();
+        return sc.nextToken();
     }
 
     public String getName() {
