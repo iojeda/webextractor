@@ -104,10 +104,9 @@ public class BinaryCanariasExtractorController {
 
         WebElement table = browser.findElement(By.id("ListaArticulos"));
         List<WebElement> tr_collection = table.findElements(By.tagName("tr"));
-
+        String group = "";
         for (WebElement trElement : tr_collection) {
             List<WebElement> td_collection = trElement.findElements(By.tagName("td"));
-            String group = "";
 
             if (td_collection.size() < 7) {// grupo
                 group = trElement.findElement(By.className("ModoImagenTITCAB")).getText();
