@@ -2,13 +2,15 @@ package extractors;
 
 import main.Article;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Ismael Ojeda Perez on 15/11/2015.
@@ -17,10 +19,22 @@ public class BinaryCanariasExtractorController {
 
     public void start() {
         // The Firefox driver supports javascript
-        WebDriver browser = new FirefoxDriver();
+        //WebDriver browser = new FirefoxDriver();
+
+        //WebDriver otro = new PhantomJSDriver()
+
+        Capabilities caps = new DesiredCapabilities();
+        ((DesiredCapabilities) caps).setJavascriptEnabled(true);
+        ((DesiredCapabilities) caps).setCapability("takesScreenshot", true);
+        ((DesiredCapabilities) caps).setCapability(
+                PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
+                "C:\\programas\\phantomjs\\bin\\phantomjs.exe"
+        );
+        WebDriver browser = new PhantomJSDriver(caps);
+
 
         // Use implicit timeouts (if no element is found when search is done it will wait)
-        browser.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        //browser.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         // Go to the web page
         browser.get("http://www.binarycanarias.com");
 
@@ -63,6 +77,9 @@ public class BinaryCanariasExtractorController {
         browser.switchTo().frame("Izquierdo");
         browser.switchTo().frame("Noticias");
 
+        // Maximize compras windows to avoid viewport errors
+        browser.manage().window().maximize();
+
         // Article extraction loop
         List<WebElement> linksMainWindow = browser.findElements(By.tagName("a"));
 
@@ -79,11 +96,12 @@ public class BinaryCanariasExtractorController {
             for (WebElement link2 : linksSecondaryWindow
                     ) {
                 link2.click();
-                try {
-                    Thread.sleep(3000);
+/*                try {
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+*/
                 browser.switchTo().defaultContent(); // Switch to the top frame
                 browser.switchTo().frame("Derecho");
                 browser.switchTo().frame("Almacen");
@@ -99,7 +117,13 @@ public class BinaryCanariasExtractorController {
 
     private List<Article> getArticles(WebDriver browser) {
         browser.switchTo().frame("idTAB1");
-        browser.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        //browser.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         List<Article> articles = new ArrayList<Article>();
 
         WebElement table = browser.findElement(By.id("ListaArticulos"));
@@ -110,8 +134,9 @@ public class BinaryCanariasExtractorController {
 
             if (td_collection.size() < 7) {// grupo
                 group = trElement.findElement(By.className("ModoImagenTITCAB")).getText();
-            }else{// new article
+            } else {// new article
                 Article article = new Article(
+                        trElement.getAttribute("id"), // Codigo de producto
                         getText(td_collection.get(0)),
                         getImage(td_collection.get(1)),
                         getText(td_collection.get(2)),
@@ -127,7 +152,12 @@ public class BinaryCanariasExtractorController {
         }
 
         System.out.println("Terminao lista de articuloss");
-        browser.switchTo().parentFrame();
+        //browser.switchTo().parentFrame();
+        browser.switchTo().defaultContent(); // Switch to the top frame
+        browser.switchTo().frame("Derecho");
+        browser.switchTo().frame("Almacen");
+        browser.switchTo().frame("Articulos");
+
         browser.findElement(By.id("Cerrar1")).click();
 
         System.out.println("Paso el click");
