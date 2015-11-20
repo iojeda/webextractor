@@ -6,7 +6,7 @@ import org.junit.Test;
  * Created by Ismael Ojeda Perez on 15/11/2015.
  */
 public class ArticleTest {
-
+    String id="";
     String date="";
     String img="VerImagen('http://cluster.binarycanarias.com/imagen.asp?cp-10103890.jpg'); return false;";
     String name="Productillo de los malos";
@@ -15,7 +15,7 @@ public class ArticleTest {
     String unknown="";
     String price="20.36";
     String group="";
-    Article article = new Article(date,img,name,opportunity,newArticle,unknown,price,group);
+    Article article = new Article(id,date,img,name,opportunity,newArticle,unknown,price,group);
     @Test
     public void testName() {
 
