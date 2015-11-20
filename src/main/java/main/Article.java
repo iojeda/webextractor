@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
  */
 public class Article {
 
+    private final String id;
     private final String date;
     private final String img;
     private final String name;
@@ -16,15 +17,23 @@ public class Article {
     private final String price;
     private final String group;
 
-    public Article(String date, String img, String name, String opportunity, String newArticle, String unknown, String price, String group) {
+
+    public Article( String id, String date, String img, String name, String opportunity, String newArticle, String unknown, String price, String group) {
         this.date = date;
-        this.img = img;
+        if (!img.equals("")) {
+            StringTokenizer sc = new StringTokenizer(img, "'");
+            sc.nextToken();
+            this.img = sc.nextToken();
+        } else
+            this.img = img;
         this.name = name;
         this.opportunity = opportunity;
         this.newArticle = newArticle;
         this.unknown = unknown;
         this.price = price;
         this.group = group;
+
+        this.id = id.replaceFirst("^tr","");
     }
 
     public String getDate() {
@@ -35,9 +44,8 @@ public class Article {
         return img;
     }
 
-    public String getImgUrl()
-    {
-        StringTokenizer sc = new StringTokenizer(img,"'");
+    public String getImgUrl() {
+        StringTokenizer sc = new StringTokenizer(img, "'");
         sc.nextToken();
         return sc.nextToken();
     }
@@ -66,10 +74,15 @@ public class Article {
         return group;
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "Article{" +
-                "date='" + date + '\'' +
+                "id='" + id + '\'' +
+                ", date='" + date + '\'' +
                 ", img='" + img + '\'' +
                 ", name='" + name + '\'' +
                 ", opportunity='" + opportunity + '\'' +
